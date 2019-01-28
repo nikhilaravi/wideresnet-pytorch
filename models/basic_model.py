@@ -11,6 +11,21 @@ import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import visdom
+
+#--------- Plot Utils  ------------#
+
+class PlotHelper:
+    def __init__(self):
+        self.vis = visdom.Visdom()
+
+    def plot_images(self, images, title):
+        print('images shape', images.size())
+        images = images/2 + 0.5 # unnormalize
+        npimg = images.numpy() # convert from tensor to numpy array
+        imgs = np.transpose(npimg, (1,2,0))
+        self.vis.text('title')
+        self.vis.image(imgs) # this doesn't work with a grid of images..
 
 # based on pytorch blitz tutorial https://github.com/pytorch/tutorials/blob/master/beginner_source/blitz/cifar10_tutorial.py
 
@@ -47,18 +62,19 @@ classes = ('plane', 'car', 'bird', 'cat',
 
 #--------- Visualize some images ------------#
 
-visualize = False
+visualize = True
 
-def imshow(img):
-    img = img/2 + 0.5 # unnormalize
-    npimg = img.numpy() # convert from tensor to numpy array
-    plt.imshow(np.transpose(npimg, (1,2,0)))
-    plt.show()
+# def imshow(img):
+#     img = img/2 + 0.5 # unnormalize
+#     npimg = img.numpy() # convert from tensor to numpy array
+#     plt.imshow(np.transpose(npimg, (1,2,0)))
+#     plt.show()
 
 if visualize:
+    vis_plot = PlotHelper()
     dataiter = iter(trainloader)
     images, labels = dataiter.next()
-    imshow(torchvision.utils.make_grid(images))
+    vis_plot.plot_images(torchvision.utils.make_grid(images), 'test')
     print(' '.join(classes[labels[j]] for j in range(BATCH_SIZE)))
 
 
